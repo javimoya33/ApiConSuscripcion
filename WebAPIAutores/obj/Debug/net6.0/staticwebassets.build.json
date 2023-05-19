@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "Hash": "i97XFgaI7GLPs8GZaaFGtFgstHm3/dDCFys+4x69W/E=",
+  "Source": "WebAPIAutores",
+  "BasePath": "_content/WebAPIAutores",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "WebAPIAutores\\wwwroot",
+      "Source": "WebAPIAutores",
+      "ContentRoot": "C:\\Users\\34656\\source\\repos\\WebApiSuscripciones\\WebAPIAutores\\wwwroot\\",
+      "BasePath": "_content/WebAPIAutores",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\34656\\source\\repos\\WebApiSuscripciones\\WebAPIAutores\\wwwroot\\Archivo 1.txt",
+      "SourceId": "WebAPIAutores",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\34656\\source\\repos\\WebApiSuscripciones\\WebAPIAutores\\wwwroot\\",
+      "BasePath": "_content/WebAPIAutores",
+      "RelativePath": "Archivo 1.txt",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\Archivo 1.txt"
+    }
+  ]
+}
