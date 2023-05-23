@@ -35,6 +35,15 @@ namespace WebAPIAutores.Middlewares
             var limitarPeticionesConfiguracion = new LimitarPeticionesConfiguracion();
             configuration.GetSection("LimitarPeticiones").Bind(limitarPeticionesConfiguracion);
 
+            var ruta = httpContext.Request.Path.ToString();
+            var estaLaRutaEnListaBlanca = limitarPeticionesConfiguracion.ListaBlancaRutas.Any(x => ruta.Contains(x));
+
+            if (estaLaRutaEnListaBlanca)
+            {
+                await siguiente(httpContext);
+                return;
+            }
+
             var llaveStringValues = httpContext.Request.Headers["X-Api-Key"];
 
             if (llaveStringValues.Count == 0)
