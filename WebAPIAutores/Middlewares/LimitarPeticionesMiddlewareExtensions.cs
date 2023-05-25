@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPIAutores.DTOs;
@@ -33,7 +35,7 @@ namespace WebAPIAutores.Middlewares
         public async Task InvokeAsync(HttpContext httpContext, ApplicationDbContext context)
         {
             var limitarPeticionesConfiguracion = new LimitarPeticionesConfiguracion();
-            configuration.GetSection("LimitarPeticiones").Bind(limitarPeticionesConfiguracion);
+            configuration.GetRequiredSection("LimitarPeticiones").Bind(limitarPeticionesConfiguracion);
 
             var ruta = httpContext.Request.Path.ToString();
             var estaLaRutaEnListaBlanca = limitarPeticionesConfiguracion.ListaBlancaRutas.Any(x => ruta.Contains(x));
@@ -64,7 +66,10 @@ namespace WebAPIAutores.Middlewares
 
             var llave = llaveStringValues[0];
 
-            var llaveDB = await context.LlavesApi.FirstOrDefaultAsync(x => x.Llave == llave);
+            var llaveDB = await context.LlavesApi
+                .Include(x => x.RestriccionesDominio)
+                .Include(x => x.RestriccionesIP)
+                .FirstOrDefaultAsync(x => x.Llave == llave);
 
             if (llaveDB == null)
             {
@@ -100,6 +105,14 @@ namespace WebAPIAutores.Middlewares
                 }
             }
 
+            /*var superaRestricciones = PeticionSuperaAlgunaDeLasRestricciones(llaveDB, httpContext);
+
+            if (!superaRestricciones)
+            {
+                httpContext.Response.StatusCode = 403;
+                return;
+            }*/
+
             var peticion = new Peticion
             {
                 LlaveId = llaveDB.Id,
@@ -109,6 +122,66 @@ namespace WebAPIAutores.Middlewares
             await context.SaveChangesAsync();
 
             await siguiente(httpContext);
+        }
+
+        private bool PeticionSuperaAlgunaDeLasRestricciones(LlaveAPI llaveAPI, HttpContext context)
+        {
+            var hayRestricciones = llaveAPI.RestriccionesDominio.Any() || llaveAPI.RestriccionesIP.Any();
+
+            if (!hayRestricciones)
+            {
+                return true;
+            }
+
+            var peticionSuperaLasRestriccionesDeDominio =
+                PeticionSuperaLasRestriccionesDeDominio(llaveAPI.RestriccionesDominio, context);
+
+            var peticionSuperaLasRestriccionesDeIP =
+                PeticionSuperaLasRestriccionesDeIP(llaveAPI.RestriccionesIP, context);
+
+            return peticionSuperaLasRestriccionesDeDominio || peticionSuperaLasRestriccionesDeIP;
+        }
+
+        private bool PeticionSuperaLasRestriccionesDeDominio(List<RestriccionDominio> restricciones, HttpContext context)
+        {
+            if (restricciones == null || restricciones.Count == 0)
+            {
+                return false;
+            }
+
+            // De qué dominio viene la petición
+            var referer = context.Request.Headers["Referer"].ToString();
+
+            if (referer == string.Empty)
+            {
+                return false;
+            }
+
+            Uri myUri = new Uri(referer);  
+            string host = myUri.Host;
+
+            var superaRestriccion = restricciones.Any(x => x.Dominio == host);
+
+            return superaRestriccion;
+        }
+
+        private bool PeticionSuperaLasRestriccionesDeIP(List<RestriccionIP> restricciones, HttpContext context)
+        {
+            if (restricciones == null || restricciones.Count == 0)
+            {
+                return false;
+            }
+
+            var IP = context.Connection.RemoteIpAddress.ToString();
+
+            if (IP == string.Empty)
+            {
+                return false;
+            }
+
+            var superaRestriccion = restricciones.Any(x => x.IP == IP);
+
+            return superaRestriccion;
         }
     }
 }

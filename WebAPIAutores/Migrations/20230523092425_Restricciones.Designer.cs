@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebAPIAutores;
 
@@ -11,9 +12,10 @@ using WebAPIAutores;
 namespace WebAPIAutores.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230523092425_Restricciones")]
+    partial class Restricciones
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -390,7 +392,7 @@ namespace WebAPIAutores.Migrations
 
                     b.HasIndex("LlaveId");
 
-                    b.ToTable("RestriccionesIPs");
+                    b.ToTable("restriccionIPs");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -503,7 +505,7 @@ namespace WebAPIAutores.Migrations
             modelBuilder.Entity("WebAPIAutores.Entidades.RestriccionDominio", b =>
                 {
                     b.HasOne("WebAPIAutores.Entidades.LlaveAPI", "Llave")
-                        .WithMany("RestriccionesDominio")
+                        .WithMany()
                         .HasForeignKey("LlaveId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -514,7 +516,7 @@ namespace WebAPIAutores.Migrations
             modelBuilder.Entity("WebAPIAutores.Entidades.RestriccionIP", b =>
                 {
                     b.HasOne("WebAPIAutores.Entidades.LlaveAPI", "Llave")
-                        .WithMany("RestriccionesIP")
+                        .WithMany()
                         .HasForeignKey("LlaveId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -532,13 +534,6 @@ namespace WebAPIAutores.Migrations
                     b.Navigation("AutoresLibros");
 
                     b.Navigation("Comentarios");
-                });
-
-            modelBuilder.Entity("WebAPIAutores.Entidades.LlaveAPI", b =>
-                {
-                    b.Navigation("RestriccionesDominio");
-
-                    b.Navigation("RestriccionesIP");
                 });
 #pragma warning restore 612, 618
         }
