@@ -8,7 +8,7 @@ using WebAPIAutores.Entidades;
 
 namespace WebAPIAutores
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<Usuario>
     {
         public ApplicationDbContext(DbContextOptions options) : base(options)
         {
@@ -30,7 +30,6 @@ namespace WebAPIAutores
         public DbSet<LlaveAPI> LlavesApi { get; set; }
         public DbSet<Peticion> Peticiones { get; set; }
         public DbSet<RestriccionDominio> RestriccionesDominios { get; set; }
-        public DbSet<RestriccionIP> RestriccionesIPs { get; set; }
-
+        public DbSet<RestriccionIP> RestriccionesIPs { get; set; } 
     }
 }
